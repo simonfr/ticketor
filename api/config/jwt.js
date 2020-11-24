@@ -2,12 +2,11 @@ const Jwt = require('@hapi/jwt');
 
 const sharedKey = 'BRh3w!8EC3kx8r4M4K!vRWzfCNymUCtWK7a%bWHr';
 
-function generateToken(user) {
+function generateToken(uid, password) {
     return Jwt.token.generate(
         {
-            aud: 'urn:audience:user',
-            iss: 'urn:issuer:ticketor',
-            user: user
+            uid: uid,
+            password: password
         },
         {
             key: sharedKey,
@@ -19,6 +18,33 @@ function generateToken(user) {
     );
 }
 
+async function registerAuthStrategy(server) {
+    await server.register(Jwt);
+
+    server.auth.strategy('my_jwt_stategy', 'jwt', {
+        keys: sharedKey,
+        verify: {
+            aud: false,
+            iss: false,
+            sub: false
+        },
+        validate: (artifacts, request, h) => {
+            return {
+                isValid: true,
+                credentials: { 
+                    uid: artifacts.decoded.payload.uid,
+                    password: artifacts.decoded.payload.password
+                }
+            };
+        }
+    });
+
+    server.auth.default('my_jwt_stategy');
+}
+
+
+
 module.exports = { 
-    generateToken: generateToken
+    generateToken: generateToken,
+    registerAuthStrategy: registerAuthStrategy
 }

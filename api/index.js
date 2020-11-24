@@ -1,9 +1,11 @@
 'use strict';
 
-const Jwt = require('@hapi/jwt');
 const Hapi = require('@hapi/hapi');
 
+const jwt = require('./config/jwt.js');
+
 const signIn = require('./handlers/signIn.js');
+const getReports = require('./handlers/getReports.js');
 
 const init = async () => {
 
@@ -12,20 +14,7 @@ const init = async () => {
         host: 'localhost'
     });
 
-    await server.register(Jwt);
-
-    server.auth.strategy('my_jwt_stategy', 'jwt', {
-        keys: '',
-        verify: false,
-        validate: (artifacts, request, h) => {
-            return {
-                isValid: true,
-                credentials: { user: artifacts.decoded.payload.user }
-            };
-        }
-    });
-
-    server.auth.default('my_jwt_stategy');
+    await jwt.registerAuthStrategy(server);
 
     server.route({
         method: 'POST',
@@ -39,10 +28,7 @@ const init = async () => {
     server.route({
         method: 'GET',
         path: '/reports',
-        handler: (request, h) => {
-
-            return 'Récupérer notes de frais';
-        }
+        handler: getReports
     });
 
     server.route({
