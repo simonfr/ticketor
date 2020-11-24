@@ -1,16 +1,27 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile/Modeles/Report.dart';
+import 'package:mobile/Services/HttpService.dart';
 import 'package:mobile/takeExpense.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:async' show Future;
 
-void main() {
+const List<String> STATE_GOOD = ["confirm", "accepted", "done", "paid"];
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   loadAsset();
+
   runApp(MyApp());
 }
 
 Future<String> loadAsset() async {
   return await rootBundle.loadString('assets/images/logo.png');
+}
+
+Future<List<Report>> loadReports() async {
+  return await HttpService.getPosts();
 }
 
 class MyApp extends StatelessWidget {
@@ -56,6 +67,34 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  int _counterExpenseAvailable = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _makeGetRequest();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  _makeGetRequest() async {
+    // make GET request
+    List<Report> reports = await HttpService.getPosts();
+    reports.forEach((element) {
+      if (STATE_GOOD.contains(element.state)) {
+        setState(() {
+          _counterExpenseAvailable++;
+        });
+      } else {
+        setState(() {
+          _counter++;
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
               style: Theme.of(context).textTheme.headline6,
             ),
             Text(
-              '$_counter',
+              '$_counterExpenseAvailable',
               style: Theme.of(context).textTheme.headline4,
             ),
             Text(
@@ -144,10 +183,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             FlatButton(
               onPressed: () async {
-                // Ensure that plugin services are initialized so that `availableCameras()`
-                // can be called before `runApp()`
-                WidgetsFlutterBinding.ensureInitialized();
-
                 // Obtain a list of the available cameras on the device.
                 final cameras = await availableCameras();
 
