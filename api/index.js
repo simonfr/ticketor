@@ -6,6 +6,7 @@ const jwt = require('./config/jwt.js');
 
 const signIn = require('./handlers/signIn.js');
 const getReports = require('./handlers/getReports.js');
+const postReports = require('./handlers/postReports.js');
 
 const init = async () => {
 
@@ -34,9 +35,7 @@ const init = async () => {
     server.route({
         method: 'POST',
         path: '/reports',
-        handler: (request, h) => {
-            return 'Créer note de frais';
-        }
+        handler: postReports
     });
 
     await server.start();
