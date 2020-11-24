@@ -9,8 +9,7 @@ function signIn(request, h) {
         ], function (error, value) {
             if (value) {
                 const token = jwt.generateToken(request.payload.login);
-                h.state('access_token', token);
-                resolve(h.response('Good to see you !').code(200));
+                resolve(h.response(token).code(200));
             } else {
                 resolve(h.response('Bad credentials').code(401));
             }
