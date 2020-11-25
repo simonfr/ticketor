@@ -33,7 +33,7 @@ class Authentication extends StatelessWidget {
     return MaterialApp(
       title: 'Ticketor',
       theme: ThemeData(
-        primarySwatch: Colors.red,
+        primarySwatch: Colors.orange,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: AuthenticationPage(title: 'Ticketor'),

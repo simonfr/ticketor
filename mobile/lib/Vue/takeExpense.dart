@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile/Services/ReportClient.dart';
 import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart';
 
@@ -11,10 +11,11 @@ import 'package:path_provider/path_provider.dart';
 class TakeExpenseScreen extends StatefulWidget {
   final CameraDescription camera;
 
-  const TakeExpenseScreen({
-    Key key,
-    @required this.camera,
-  }) : super(key: key);
+  const TakeExpenseScreen(
+      {Key key, @required this.camera, @required this.token})
+      : super(key: key);
+
+  final String token;
 
   @override
   TakeExpenseScreenState createState() => TakeExpenseScreenState();
@@ -51,9 +52,13 @@ class TakeExpenseScreenState extends State<TakeExpenseScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Enregistrer votre note de frais'),
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
+        iconTheme: IconThemeData(
+          color: Colors.white, //change your color here
+        ),
       ),
-
+      extendBodyBehindAppBar: true,
       // Wait until the controller is initialized before displaying the
       // camera preview. Use a FutureBuilder to display a loading spinner
       // until the controller has finished initializing.
@@ -92,10 +97,12 @@ class TakeExpenseScreenState extends State<TakeExpenseScreen> {
             await _controller.takePicture(path);
 
             // If the picture was taken, display it on a new screen.
+            _controller.stopImageStream();
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => DisplayPictureScreen(imagePath: path),
+                builder: (context) =>
+                    DisplayPictureScreen(imagePath: path, token: widget.token),
               ),
             );
           } catch (e) {
@@ -109,41 +116,95 @@ class TakeExpenseScreenState extends State<TakeExpenseScreen> {
   }
 }
 
-// A widget that displays the picture taken by the user.
-class DisplayPictureScreen extends StatelessWidget {
+class DisplayPictureScreen extends StatefulWidget {
   final String imagePath;
+  final String token;
 
-  const DisplayPictureScreen({Key key, this.imagePath}) : super(key: key);
+  const DisplayPictureScreen(
+      {Key key, @required this.imagePath, @required this.token})
+      : super(key: key);
 
+  @override
+  DisplayPictureScreenState createState() => DisplayPictureScreenState();
+}
+
+// A widget that displays the picture taken by the user.
+class DisplayPictureScreenState extends State<DisplayPictureScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text('Validation')),
-        // The image is stored as a file on the device. Use the `Image.file`
-        // constructor with the given path to display the image.
-        body: Image.file(File(imagePath)),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0.0,
+          iconTheme: IconThemeData(
+            color: Colors.black, //change your color here
+          ),
+        ),
+        body: Center(
+            child: Column(
+          children: <Widget>[
+            Text(
+              'Votre note de frais',
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            Image.file(File(widget.imagePath))
+          ],
+        )),
         floatingActionButton: FloatingActionButton(
-            child: Icon(Icons.send),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[Icon(Icons.send)],
+            ),
             onPressed: () async {
-              debugPrint('movieTitle: $imagePath');
-              File _imageFile = File(imagePath);
-              if (_imageFile != null) {
-                List<int> imageBytes = await _imageFile.readAsBytes();
-                String base64Image = base64Encode(imageBytes);
-
-                var url = 'https://example.com/whatsit/create';
-
-                var response = await http
-                    .post(url, body: {'user': 'doodle', 'image': base64Image});
-                if (response.statusCode != 200) {
-                  Navigator.pop(context);
-                } else {}
-                print('Response status: ${response.statusCode}');
-                print('Response body: ${response.body}');
-
-                print(await http.read('https://example.com/foobar.txt'));
+              StreamedResponse res = await ReportClient.PostExpense(
+                  widget.token, widget.imagePath);
+              if (res.statusCode == 200) {
+                _showDialog(
+                    "Votre demande est en cours de traitement", context);
+              } else {
+                _showDialogError("L'envoie de l'image à échoué");
               }
             }),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat);
+  }
+
+  void _showDialog(String message, BuildContext context) {
+    showDialog(
+        context: context,
+        useRootNavigator: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(message),
+            actions: [
+              FlatButton(
+                child: Text('OK'),
+                onPressed: () {
+                  int count = 0;
+                  Navigator.of(context).popUntil((_) => count++ >= 3);
+                },
+              ),
+            ],
+          );
+        });
+  }
+
+  void _showDialogError(String message) {
+    showDialog(
+        context: context,
+        useRootNavigator: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(message),
+            actions: [
+              FlatButton(
+                child: Text('OK'),
+                onPressed: () {
+                  int count = 0;
+                  Navigator.of(context).popUntil((_) => count++ >= 2);
+                },
+              ),
+            ],
+          );
+        });
   }
 }
