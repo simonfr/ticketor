@@ -1,10 +1,6 @@
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/Modeles/Report.dart';
 import 'package:mobile/Services/ReportClient.dart';
-import 'package:mobile/Vue/takeExpense.dart';
-
-const List<String> STATE_GOOD = ["confirm", "accepted", "done", "paid"];
 
 class DetailScreen extends StatefulWidget {
   DetailScreen({Key key, this.token}) : super(key: key);
@@ -25,8 +21,6 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _DetailScreenState extends State<DetailScreen> {
-  int _counter = 0;
-  int _counterExpenseAvailable = 0;
   List<String> _lines = <String>[];
   @override
   void initState() {
@@ -40,14 +34,11 @@ class _DetailScreenState extends State<DetailScreen> {
   }
 
   _getReports() async {
-    _counterExpenseAvailable = 0;
-    _counter = 0;
     _lines = <String>[];
     String _line = "";
     // make GET request
     List<Report> reports = await ReportClient.getPosts(widget.token);
     reports.forEach((element) {
-      _counterExpenseAvailable++;
       _line = element.name +
           " " +
           element.date +
@@ -57,10 +48,7 @@ class _DetailScreenState extends State<DetailScreen> {
           element.state;
       _lines.add(_line);
     });
-    setState(() {
-      _counter++;
-      _counterExpenseAvailable++;
-    });
+    setState(() {});
   }
 
   @override
