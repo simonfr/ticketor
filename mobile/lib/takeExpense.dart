@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart';
 
-const url = 'https://example.com/whatsit/create';
-
 // A screen that allows users to take a picture using a given camera.
 class TakeExpenseScreen extends StatefulWidget {
   final CameraDescription camera;
@@ -54,7 +52,6 @@ class TakeExpenseScreenState extends State<TakeExpenseScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Enregistrer votre note de frais'),
-        backgroundColor: Colors.transparent,
       ),
 
       // Wait until the controller is initialized before displaying the

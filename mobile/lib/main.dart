@@ -1,7 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/Modeles/Report.dart';
-import 'package:mobile/Services/HttpService.dart';
+import 'package:mobile/Services/ReportClient.dart';
 import 'package:mobile/takeExpense.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:async' show Future;
@@ -18,10 +18,6 @@ Future<void> main() async {
 
 Future<String> loadAsset() async {
   return await rootBundle.loadString('assets/images/logo.png');
-}
-
-Future<List<Report>> loadReports() async {
-  return await HttpService.getPosts();
 }
 
 class MyApp extends StatelessWidget {
@@ -72,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _makeGetRequest();
+    _getReports();
   }
 
   @override
@@ -80,19 +76,21 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
-  _makeGetRequest() async {
+  _getReports() async {
+    _counterExpenseAvailable = 0;
+    _counter = 0;
     // make GET request
-    List<Report> reports = await HttpService.getPosts();
+    List<Report> reports = await ReportClient.getPosts();
     reports.forEach((element) {
       if (STATE_GOOD.contains(element.state)) {
-        setState(() {
-          _counterExpenseAvailable++;
-        });
+        _counterExpenseAvailable++;
       } else {
-        setState(() {
-          _counter++;
-        });
+        _counter++;
       }
+    });
+    setState(() {
+      _counter++;
+      _counterExpenseAvailable++;
     });
   }
 
@@ -123,6 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // center the children vertically; the main axis here is the vertical
           // axis because Columns are vertical (the cross axis would be
           // horizontal).
+
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Image(

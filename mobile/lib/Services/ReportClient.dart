@@ -1,20 +1,18 @@
 import 'dart:convert' as convert;
-import 'dart:developer';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:mobile/Modeles/Report.dart';
+import 'package:mobile/constante.dart';
 
-class HttpService {
-  static final String reportsUrl = "https://510be684671f.ngrok.io/reports";
-  static final String token =
-      "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjIsInBhc3N3b3JkIjoiYWRtaW4xMjMiLCJpYXQiOjE2MDYyMjUxMjEsImV4cCI6MTYwNjIzOTUyMX0.PxeuNSJOeJ_8HxXmDZzDbfiQspiuhW5O1ZV2eV5CwJMxFZOxpnokXKiSJaaWGm5lux_X8QP9hGUW6fuTCN1-Uw";
-
+class ReportClient {
+  static final String reportsUrl = Variable.URL_API + "/reports";
+  static final token = Variable.TOKEN;
   static Future<List<Report>> getPosts() async {
     Response res = await get(
       reportsUrl,
       headers: {HttpHeaders.authorizationHeader: "Bearer $token"},
     );
+    // TODO
     if (res.statusCode == 200) {
       List<dynamic> body = convert.jsonDecode(res.body);
 

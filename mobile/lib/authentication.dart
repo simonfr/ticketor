@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:mobile/constante.dart';
 part 'authentication.g.dart';
 
 void main() {
@@ -89,8 +90,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                       // Use a JSON encoded string to send
                       debugPrint(
                           "Data " + jsonEncode(formData.toJson()).toString());
-                      var result = await http.post(
-                          'https://510be684671f.ngrok.io/signin',
+                      var result = await http.post(Variable.URL_API + '/signin',
                           body: jsonEncode(formData.toJson()),
                           headers: {'content-type': 'application/json'});
                       debugPrint(result.body.toString());
