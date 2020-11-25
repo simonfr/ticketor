@@ -4,6 +4,8 @@ import 'package:mobile/Modeles/Report.dart';
 import 'package:mobile/Services/ReportClient.dart';
 import 'package:mobile/Vue/takeExpense.dart';
 
+import 'detail.dart';
+
 const List<String> STATE_GOOD = ["confirm", "accepted", "done", "paid"];
 
 class MyHomePage extends StatefulWidget {
@@ -51,10 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
         _counter++;
       }
     });
-    setState(() {
-      _counter++;
-      _counterExpenseAvailable++;
-    });
+    setState(() {});
   }
 
   @override
@@ -122,8 +121,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        TakeExpenseScreen(camera: firstCamera, token: widget.token,),
+                    builder: (context) => TakeExpenseScreen(
+                      camera: firstCamera,
+                      token: widget.token,
+                    ),
                   ),
                 );
               },
@@ -145,17 +146,10 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             FlatButton(
               onPressed: () async {
-                // Obtain a list of the available cameras on the device.
-                final cameras = await availableCameras();
-
-                // Get a specific camera from the list of available cameras.
-                final firstCamera = cameras.first;
-
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        TakeExpenseScreen(camera: firstCamera),
+                    builder: (context) => DetailScreen(token: widget.token),
                   ),
                 );
               },
