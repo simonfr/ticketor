@@ -55,9 +55,6 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
   FormData formData = FormData();
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Sign in Form'),
-      ),
       body: Form(
         child: Scrollbar(
           child: SingleChildScrollView(
@@ -65,6 +62,10 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
             child: Column(
               children: [
                 ...[
+                  Image(
+                    image: AssetImage('images/logo.png'),
+                    width: Theme.of(context).iconTheme.size,
+                  ),
                   TextFormField(
                     decoration: InputDecoration(
                       filled: true,
@@ -98,7 +99,9 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => MyHomePage(token: result.body.toString(),),
+                            builder: (context) => MyHomePage(
+                              token: result.body.toString(),
+                            ),
                           ),
                         );
                       } else if (result.statusCode == 401) {
