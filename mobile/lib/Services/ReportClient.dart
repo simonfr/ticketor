@@ -6,8 +6,7 @@ import 'package:mobile/constante.dart';
 
 class ReportClient {
   static final String reportsUrl = Variable.URL_API + "/reports";
-  static final token = Variable.TOKEN;
-  static Future<List<Report>> getPosts() async {
+  static Future<List<Report>> getPosts(String token) async {
     Response res = await get(
       reportsUrl,
       headers: {HttpHeaders.authorizationHeader: "Bearer $token"},

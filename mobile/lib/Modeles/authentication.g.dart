@@ -1,4 +1,4 @@
-part of 'authentication.dart';
+part of '../Vue/authentication.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator

@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:mobile/Vue/homePage.dart';
 import 'package:mobile/constante.dart';
-part 'authentication.g.dart';
+part '../Modeles/authentication.g.dart';
 
 void main() {
   runApp(Authentication());
@@ -93,10 +94,13 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                       var result = await http.post(Variable.URL_API + '/signin',
                           body: jsonEncode(formData.toJson()),
                           headers: {'content-type': 'application/json'});
-                      debugPrint(result.body.toString());
-
                       if (result.statusCode == 200) {
-                        _showDialog('Succesfully signed in.');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MyHomePage(token: result.body.toString(),),
+                          ),
+                        );
                       } else if (result.statusCode == 401) {
                         _showDialog('Unable to sign in.');
                       } else {
