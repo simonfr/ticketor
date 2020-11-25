@@ -158,7 +158,7 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
             onPressed: () async {
               StreamedResponse res = await ReportClient.PostExpense(
                   widget.token, widget.imagePath);
-              if (res.statusCode == 200) {
+              if (res.statusCode == 201) {
                 _showDialog(
                     "Votre demande est en cours de traitement", context);
               } else {
