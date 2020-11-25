@@ -1,20 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:mobile/Vue/MyHomePage.dart';
 import 'dart:async' show Future;
 
 import 'package:mobile/Vue/authentication.dart';
 
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  loadAsset();
-
   runApp(MyApp());
-}
-
-Future<String> loadAsset() async {
-  return await rootBundle.loadString('assets/images/logo.png');
 }
 
 class MyApp extends StatelessWidget {

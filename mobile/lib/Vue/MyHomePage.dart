@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/Modeles/Report.dart';
 import 'package:mobile/Services/ReportClient.dart';
-import 'package:mobile/Vue/takeExpense.dart';
-
-import 'detail.dart';
+import 'package:mobile/Vue/TakeExpenseScreen.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:mobile/main.dart';
+import 'DetailScreen.dart';
+import 'DisplayPictureScreen.dart';
 
 const List<String> STATE_GOOD = ["confirm", "accepted", "done", "paid"];
 
@@ -54,6 +58,34 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
     setState(() {});
+  }
+
+  _imgFromGallery() async {
+    File image = await ImagePicker.pickImage(
+        source: ImageSource.gallery, imageQuality: 50);
+    return image.path;
+  }
+
+  void _showPicker(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Container(
+              child: new Wrap(
+                children: <Widget>[
+                  new ListTile(
+                      leading: new Icon(Icons.photo_library),
+                      title: new Text('Photo Library'),
+                      onTap: () {
+                        _imgFromGallery();
+                        Navigator.of(context).pop();
+                      }),
+                ],
+              ),
+            ),
+          );
+        });
   }
 
   @override
@@ -146,6 +178,31 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             FlatButton(
               onPressed: () async {
+                String path = await _imgFromGallery();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DisplayPictureScreen(
+                        imagePath: path, token: widget.token),
+                  ),
+                );
+              },
+              child: Text(
+                'Selectionner la note',
+                style: TextStyle(
+                    fontFamily:
+                        Theme.of(context).textTheme.headline6.fontFamily,
+                    fontStyle: Theme.of(context).textTheme.headline6.fontStyle,
+                    fontSize: Theme.of(context).textTheme.headline6.fontSize,
+                    color: Colors.white),
+              ),
+              color: Colors.orange,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18.0),
+              ),
+            ),
+            FlatButton(
+              onPressed: () async {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -166,8 +223,6 @@ class _MyHomePageState extends State<MyHomePage> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(18.0),
               ),
-
-              // This trailing comma makes auto-formatting nicer for build methods.
             ),
           ],
         ),

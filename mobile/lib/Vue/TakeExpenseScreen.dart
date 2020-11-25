@@ -1,11 +1,10 @@
 import 'dart:async';
-import 'dart:io';
-import 'package:http/http.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile/Services/ReportClient.dart';
 import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart';
+
+import 'DisplayPictureScreen.dart';
 
 // A screen that allows users to take a picture using a given camera.
 class TakeExpenseScreen extends StatefulWidget {
@@ -97,12 +96,11 @@ class TakeExpenseScreenState extends State<TakeExpenseScreen> {
             await _controller.takePicture(path);
 
             // If the picture was taken, display it on a new screen.
-            _controller.stopImageStream();
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) =>
-                    DisplayPictureScreen(imagePath: path, token: widget.token),
+                builder: (context) => DisplayPictureScreen(
+                    imagePath: path, token: widget.token, count: 3),
               ),
             );
           } catch (e) {
@@ -113,98 +111,5 @@ class TakeExpenseScreenState extends State<TakeExpenseScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
-  }
-}
-
-class DisplayPictureScreen extends StatefulWidget {
-  final String imagePath;
-  final String token;
-
-  const DisplayPictureScreen(
-      {Key key, @required this.imagePath, @required this.token})
-      : super(key: key);
-
-  @override
-  DisplayPictureScreenState createState() => DisplayPictureScreenState();
-}
-
-// A widget that displays the picture taken by the user.
-class DisplayPictureScreenState extends State<DisplayPictureScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0.0,
-          iconTheme: IconThemeData(
-            color: Colors.black, //change your color here
-          ),
-        ),
-        body: Center(
-            child: Column(
-          children: <Widget>[
-            Text(
-              'Votre note de frais',
-              style: Theme.of(context).textTheme.headline6,
-            ),
-            Image.file(File(widget.imagePath))
-          ],
-        )),
-        floatingActionButton: FloatingActionButton(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[Icon(Icons.send)],
-            ),
-            onPressed: () async {
-              StreamedResponse res = await ReportClient.PostExpense(
-                  widget.token, widget.imagePath);
-              if (res.statusCode == 201) {
-                _showDialog(
-                    "Votre demande est en cours de traitement", context);
-              } else {
-                _showDialogError("L'envoie de l'image à échoué");
-              }
-            }),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat);
-  }
-
-  void _showDialog(String message, BuildContext context) {
-    showDialog(
-        context: context,
-        useRootNavigator: false,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(message),
-            actions: [
-              FlatButton(
-                child: Text('OK'),
-                onPressed: () {
-                  int count = 0;
-                  Navigator.of(context).popUntil((_) => count++ >= 3);
-                },
-              ),
-            ],
-          );
-        });
-  }
-
-  void _showDialogError(String message) {
-    showDialog(
-        context: context,
-        useRootNavigator: false,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(message),
-            actions: [
-              FlatButton(
-                child: Text('OK'),
-                onPressed: () {
-                  int count = 0;
-                  Navigator.of(context).popUntil((_) => count++ >= 2);
-                },
-              ),
-            ],
-          );
-        });
   }
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:mobile/Vue/homePage.dart';
+import 'package:mobile/Vue/MyHomePage.dart';
 import 'package:mobile/constante.dart';
 part '../Modeles/authentication.g.dart';
 
