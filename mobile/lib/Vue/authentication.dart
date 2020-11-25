@@ -129,6 +129,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
 
   void _showDialog(String message) {
     showDialog(
+      useRootNavigator: false,
       context: context,
       child: AlertDialog(
         title: Text(message),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mobile/Modeles/Report.dart';
 import 'package:mobile/Services/ReportClient.dart';
 
+import '../Modeles/Report.dart';
+
 class DetailScreen extends StatefulWidget {
   DetailScreen({Key key, this.token}) : super(key: key);
 
@@ -22,6 +24,7 @@ class DetailScreen extends StatefulWidget {
 
 class _DetailScreenState extends State<DetailScreen> {
   List<String> _lines = <String>[];
+  List<Report> reports = <Report>[];
   @override
   void initState() {
     super.initState();
@@ -37,7 +40,7 @@ class _DetailScreenState extends State<DetailScreen> {
     _lines = <String>[];
     String _line = "";
     // make GET request
-    List<Report> reports = await ReportClient.getPosts(widget.token);
+    reports = await ReportClient.getPosts(widget.token);
     reports.forEach((element) {
       _line = element.name +
           " " +
@@ -66,21 +69,57 @@ class _DetailScreenState extends State<DetailScreen> {
         padding: const EdgeInsets.all(8),
         itemCount: entries.length,
         itemBuilder: (BuildContext context, int index) {
-          return Container(
-            height: 50,
-            color: Colors.orange,
-            child: Center(
+          return GestureDetector(
+            onLongPress: () {
+              Report report = reports.elementAt(index);
+              _showDialog("Nom: " +
+                  report.name +
+                  "\nDate: " +
+                  report.date +
+                  "\nQuantité: " +
+                  report.quantity.toString() +
+                  "\nMontant Unitaire: " +
+                  report.unitAmount.toString() +
+                  "\nMontant totale: " +
+                  report.totalAmount.toString() +
+                  "\nStatus: " +
+                  report.state);
+            },
+            child: Container(
+              height: 50,
+              color: Colors.orange,
+              child: Center(
                 child: Text(
-              entries[index],
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: Theme.of(context).textTheme.headline6.fontSize,
-                  fontStyle: Theme.of(context).textTheme.headline6.fontStyle,
-                  fontFamily: Theme.of(context).textTheme.headline6.fontFamily),
-            )),
+                  entries[index],
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: Theme.of(context).textTheme.headline6.fontSize,
+                      fontStyle:
+                          Theme.of(context).textTheme.headline6.fontStyle,
+                      fontFamily:
+                          Theme.of(context).textTheme.headline6.fontFamily),
+                ),
+              ),
+            ),
           );
         },
         separatorBuilder: (BuildContext context, int index) => const Divider(),
+      ),
+    );
+  }
+
+  void _showDialog(String message) {
+    showDialog(
+      useRootNavigator: false,
+      context: context,
+      child: AlertDialog(
+        title: Text(message),
+        actions: [
+          FlatButton(
+            child: Text('OK'),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ],
       ),
     );
   }
