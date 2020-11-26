@@ -1,12 +1,7 @@
-import 'dart:io';
-
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/Modeles/Report.dart';
 import 'package:mobile/Services/ReportClient.dart';
-import 'package:mobile/Vue/TakeExpenseScreen.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mobile/main.dart';
 import 'DetailScreen.dart';
 import 'DisplayPictureScreen.dart';
 
@@ -33,6 +28,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   int _counterExpenseAvailable = 0;
+  final picker = ImagePicker();
 
   @override
   void initState() {
@@ -62,31 +58,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   _imgFromGallery() async {
-    File image = await ImagePicker.pickImage(
-        source: ImageSource.gallery, imageQuality: 50);
+    final image = await picker.getImage(source: ImageSource.gallery);
     return image.path;
   }
 
-  void _showPicker(context) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext bc) {
-          return SafeArea(
-            child: Container(
-              child: new Wrap(
-                children: <Widget>[
-                  new ListTile(
-                      leading: new Icon(Icons.photo_library),
-                      title: new Text('Photo Library'),
-                      onTap: () {
-                        _imgFromGallery();
-                        Navigator.of(context).pop();
-                      }),
-                ],
-              ),
-            ),
-          );
-        });
+  _imgFromCamera() async {
+    final image = await picker.getImage(source: ImageSource.camera);
+    return image.path;
   }
 
   @override
@@ -141,24 +119,14 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             FlatButton(
               onPressed: () async {
-                // Ensure that plugin services are initialized so that `availableCameras()`
-                // can be called before `runApp()`
-                WidgetsFlutterBinding.ensureInitialized();
-
-                // Obtain a list of the available cameras on the device.
-                final cameras = await availableCameras();
-
-                // Get a specific camera from the list of available cameras.
-                final firstCamera = cameras.first;
-
+                String path = await _imgFromCamera();
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => TakeExpenseScreen(
-                      camera: firstCamera,
-                      token: widget.token,
-                      notifyParent: _getReports,
-                    ),
+                    builder: (context) => DisplayPictureScreen(
+                        imagePath: path,
+                        token: widget.token,
+                        notifyParent: _getReports),
                   ),
                 );
               },
