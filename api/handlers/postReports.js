@@ -1,32 +1,39 @@
 const client = require('../config/odoo.js');
+const detectText = require('../ia/detect.js');
+var moment = require('moment');
 
 function postReports(request, h) {
     //request.payload.image
     //request.payload.subjet
-
-    // traitement image => report
-
-    var fakeObject = {
-        name: "Voyage en Zonzonbie",
-        date: '2020-11-09',
-        unit_amount: 15248.65,
-        quantity: 1,
-        employee_id: request.auth.credentials.uid
-    }
-
     return new Promise((resolve, reject) => {
-        client.models.methodCall('execute_kw', [
-            client.getDb(), request.auth.credentials.uid, request.auth.credentials.password,
-            "hr.expense", "create", [ fakeObject ]
-        ], function (error, value) {
-            if(error) {
-                console.log(error);
-                reject(error);
+    // traitement image => report
+        detectText(Buffer.from(request.payload.images))
+        .then((response) => {
+            if (!response.name) {
+                resolve(h.response("cannot find expense name").code(422))
             } else {
-                createBase64Image(request, value);
-                resolve(h.response().code(201))
+                client.models.methodCall('execute_kw', [
+                    client.getDb(), request.auth.credentials.uid, request.auth.credentials.password,
+                    "hr.expense", "create", [ {
+                        name: response.name,
+                        date: moment(response.date).format('YYYY-MM-DD'),
+                        unit_amount: response.total,
+                        employee_id: request.auth.credentials.uid
+                    } ]
+                ], function (error, value) {
+                    if(error) {
+                        console.log(error);
+                        resolve(h.response().code(503))
+                    } else {
+                        createBase64Image(request, value);
+                        resolve(h.response().code(201))
+                    }
+                });
             }
-        });
+        })
+        .catch(() => {
+            resolve(h.response("image not readable").code(422));
+        })
     });
 }
 

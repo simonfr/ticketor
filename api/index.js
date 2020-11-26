@@ -28,7 +28,7 @@ const init = async () => {
 
     server.route({
         method: 'GET',
-        path: '/reports',
+        path: '/reports/{id?}',
         handler: getReports
     });
 
