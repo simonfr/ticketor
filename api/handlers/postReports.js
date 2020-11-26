@@ -7,33 +7,37 @@ function postReports(request, h) {
     //request.payload.subjet
     return new Promise((resolve, reject) => {
     // traitement image => report
-        detectText(Buffer.from(request.payload.images))
-        .then((response) => {
-            if (!response.name) {
-                resolve(h.response("cannot find expense name").code(422))
-            } else {
-                client.models.methodCall('execute_kw', [
-                    client.getDb(), request.auth.credentials.uid, request.auth.credentials.password,
-                    "hr.expense", "create", [ {
-                        name: response.name,
-                        date: moment(response.date).format('YYYY-MM-DD'),
-                        unit_amount: response.total,
-                        employee_id: request.auth.credentials.uid
-                    } ]
-                ], function (error, value) {
-                    if(error) {
-                        console.log(error);
-                        resolve(h.response().code(503))
-                    } else {
-                        createBase64Image(request, value);
-                        resolve(h.response().code(201))
-                    }
-                });
-            }
-        })
-        .catch(() => {
-            resolve(h.response("image not readable").code(422));
-        })
+        if(request.payload.images) {
+            detectText(Buffer.from(request.payload.images))
+            .then((response) => {
+                if (!response.name) {
+                    resolve(h.response("cannot find expense name").code(422))
+                } else {
+                    client.models.methodCall('execute_kw', [
+                        client.getDb(), request.auth.credentials.uid, request.auth.credentials.password,
+                        "hr.expense", "create", [ {
+                            name: response.name,
+                            date: moment(response.date).format('YYYY-MM-DD'),
+                            unit_amount: response.total,
+                            employee_id: request.auth.credentials.uid
+                        } ]
+                    ], function (error, value) {
+                        if(error) {
+                            console.log(error);
+                            resolve(h.response().code(503))
+                        } else {
+                            createBase64Image(request, value);
+                            resolve(h.response().code(201))
+                        }
+                    });
+                }
+            })
+            .catch(() => {
+                resolve(h.response("image not readable").code(422));
+            })
+        } else {
+            resolve(h.response("please send file in 'images' field").code(422));
+        }
     });
 }
 
