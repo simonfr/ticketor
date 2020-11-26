@@ -1,13 +1,7 @@
-import 'dart:async';
 import 'dart:io';
 import 'package:http/http.dart';
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/Services/ReportClient.dart';
-import 'package:mobile/Vue/MyHomePage.dart';
-import 'package:mobile/main.dart';
-import 'package:path/path.dart' show join;
-import 'package:path_provider/path_provider.dart';
 
 class DisplayPictureScreen extends StatefulWidget {
   final String imagePath;
@@ -67,8 +61,8 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
                     _showDialog(
                         "Votre demande est en cours de traitement", false);
                   } else {
-                    final message = await res.stream.bytesToString();
-                    _showDialog(message, true);
+                    _showDialog(
+                        "Votre image n'est pas une note de frais", true);
                   }
                 }),
             floatingActionButtonLocation:
