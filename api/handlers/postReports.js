@@ -30,22 +30,36 @@ function postReports(request, h) {
     });
 }
 
-function createBase64Image(request, value) {
+function createBase64Image(request, expenseId) {
     client.models.methodCall('execute_kw', [
         client.getDb(), request.auth.credentials.uid, request.auth.credentials.password,
         "ir.attachment", "create", [ {
             res_model: 'hr.expense',
             name: 'image',
-            res_id: value,
+            res_id: expenseId,
             type: 'binary',
             datas: Buffer.from(request.payload.images).toString('base64')
+        } ]
+    ], function (error, attachmentId) {
+        if(error) {
+            console.log(error);
+        } else {
+            updateAttachment(request, attachmentId, expenseId);
+        }
+    });
+}
+
+function updateAttachment(request, attachmentId, expenseId) {
+    client.models.methodCall('execute_kw', [
+        client.getDb(), request.auth.credentials.uid, request.auth.credentials.password,
+        "hr.expense", "write", [ [expenseId], {
+            message_main_attachment_id: attachmentId
         } ]
     ], function (error, _value) {
         if(error) {
             console.log(error);
         }
     });
-
 }
 
 module.exports = postReports
