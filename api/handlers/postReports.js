@@ -10,22 +10,42 @@ function postReports(request, h) {
         name: "Voyage en Zonzonbie",
         date: '2020-11-09',
         unit_amount: 15248.65,
-        quantity: 1
+        quantity: 1,
+        employee_id: request.auth.credentials.uid
     }
 
     return new Promise((resolve, reject) => {
         client.models.methodCall('execute_kw', [
             client.getDb(), request.auth.credentials.uid, request.auth.credentials.password,
             "hr.expense", "create", [ fakeObject ]
-        ], function (error, _value) {
+        ], function (error, value) {
             if(error) {
                 console.log(error);
                 reject(error);
             } else {
+                createBase64Image(request, value);
                 resolve(h.response().code(201))
             }
         });
     });
+}
+
+function createBase64Image(request, value) {
+    client.models.methodCall('execute_kw', [
+        client.getDb(), request.auth.credentials.uid, request.auth.credentials.password,
+        "ir.attachment", "create", [ {
+            res_model: 'hr.expense',
+            name: 'image',
+            res_id: value,
+            type: 'binary',
+            datas: Buffer.from(request.payload.images).toString('base64')
+        } ]
+    ], function (error, _value) {
+        if(error) {
+            console.log(error);
+        }
+    });
+
 }
 
 module.exports = postReports

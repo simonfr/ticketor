@@ -35,6 +35,7 @@ const init = async () => {
     server.route({
         method: 'POST',
         path: '/reports',
+        options: { payload: { multipart: true } },
         handler: postReports
     });
 
