@@ -103,7 +103,7 @@ class TakeExpenseScreenState extends State<TakeExpenseScreen> {
                 builder: (context) => DisplayPictureScreen(
                     imagePath: path,
                     token: widget.token,
-                    count: 3,
+                    count: 2,
                     notifyParent: widget.notifyParent),
               ),
             );

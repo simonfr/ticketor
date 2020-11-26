@@ -157,7 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     builder: (context) => TakeExpenseScreen(
                       camera: firstCamera,
                       token: widget.token,
-                      notifyParent: _getReports(),
+                      notifyParent: _getReports,
                     ),
                   ),
                 );

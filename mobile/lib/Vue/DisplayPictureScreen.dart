@@ -31,43 +31,50 @@ class DisplayPictureScreen extends StatefulWidget {
 class DisplayPictureScreenState extends State<DisplayPictureScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0.0,
-          iconTheme: IconThemeData(
-            color: Colors.black, //change your color here
-          ),
-        ),
-        body: Center(
-            child: Column(
-          children: <Widget>[
-            Text(
-              'Votre note de frais',
-              style: Theme.of(context).textTheme.headline6,
+    return WillPopScope(
+        onWillPop: () async {
+          widget.notifyParent();
+          return true;
+        },
+        child: Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0.0,
+              iconTheme: IconThemeData(
+                color: Colors.black, //change your color here
+              ),
             ),
-            Image.file(File(widget.imagePath))
-          ],
-        )),
-        floatingActionButton: FloatingActionButton(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[Icon(Icons.send)],
-            ),
-            onPressed: () async {
-              StreamedResponse res = await ReportClient.PostExpense(
-                  widget.token, widget.imagePath);
-              if (res.statusCode == 201) {
-                _showDialog("Votre demande est en cours de traitement", false);
-              } else {
-                _showDialog("L'envoie de l'image à échoué", true);
-              }
-            }),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat);
+            body: Center(
+                child: Column(
+              children: <Widget>[
+                Text(
+                  'Votre note de frais',
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+                Image.file(File(widget.imagePath))
+              ],
+            )),
+            floatingActionButton: FloatingActionButton(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[Icon(Icons.send)],
+                ),
+                onPressed: () async {
+                  StreamedResponse res = await ReportClient.PostExpense(
+                      widget.token, widget.imagePath);
+                  if (res.statusCode == 201) {
+                    _showDialog(
+                        "Votre demande est en cours de traitement", false);
+                  } else {
+                    _showDialog("L'envoie de l'image à échoué", true);
+                  }
+                }),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat));
   }
 
-  void _showDialog(String message, bool error) {
-    showDialog(
+  void _showDialog(String message, bool error) async {
+    await showDialog(
         context: context,
         useRootNavigator: false,
         builder: (BuildContext context) {
@@ -77,17 +84,19 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
               FlatButton(
                 child: Text('Ok'),
                 onPressed: () {
-                  int count = 0;
-                  int countLimit = widget.count == null ? 2 : widget.count;
-                  if (error && countLimit >= 3) {
-                    countLimit--;
-                  }
-                  widget.notifyParent();
-                  Navigator.of(context).popUntil((_) => count++ >= countLimit);
+                  Navigator.of(context).pop();
                 },
               ),
             ],
           );
-        });
+        }).then((value) {
+      int count = 0;
+      int countLimit = widget.count == null ? 1 : widget.count;
+      if (error && countLimit >= 2) {
+        countLimit--;
+      }
+      widget.notifyParent();
+      Navigator.of(context).popUntil((_) => count++ >= countLimit);
+    });
   }
 }
