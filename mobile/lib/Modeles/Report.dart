@@ -5,9 +5,9 @@ class Report {
   final int id;
   final String name;
   final String date;
-  final double unitAmount;
+  final num unitAmount;
   final int quantity;
-  final double totalAmount;
+  final num totalAmount;
   final String createDate;
   final String state;
   Report({
@@ -26,9 +26,9 @@ class Report {
         id: json['id'] as int,
         name: json['name'] as String,
         date: json['date'] as String,
-        unitAmount: json['unit_amount'] as double,
+        unitAmount: json['unit_amount'] as num,
         quantity: json['quantity'] as int,
-        totalAmount: json['total_amount'] as double,
+        totalAmount: json['total_amount'] as num,
         createDate: json['createDate'] as String,
         state: json['state'] as String);
   }
