@@ -14,13 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: '/login',
-      routes: {
-        // When navigating to the "/" route, build the FirstScreen widget.
-        '/login': (context) => Authentication(),
-        // When navigating to the "/second" route, build the SecondScreen widget.
-        '/': (context) => MyHomePage(),
-      },
+      home: Authentication(),
     );
   }
 }

@@ -38,7 +38,7 @@ class ReportClient {
 
       return report;
     } else {
-      throw "Can't get reports";
+      throw "Can't get report";
     }
   }
 
@@ -52,7 +52,6 @@ class ReportClient {
     request.headers.addAll(headers);
     var res = await request.send();
     debugPrint(res.statusCode.toString());
-    debugPrint(token);
     return res;
   }
 }

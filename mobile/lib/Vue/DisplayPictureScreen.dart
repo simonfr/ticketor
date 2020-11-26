@@ -1,13 +1,7 @@
-import 'dart:async';
 import 'dart:io';
 import 'package:http/http.dart';
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/Services/ReportClient.dart';
-import 'package:mobile/Vue/MyHomePage.dart';
-import 'package:mobile/main.dart';
-import 'package:path/path.dart' show join;
-import 'package:path_provider/path_provider.dart';
 
 class DisplayPictureScreen extends StatefulWidget {
   final String imagePath;
@@ -62,11 +56,13 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
                 onPressed: () async {
                   StreamedResponse res = await ReportClient.PostExpense(
                       widget.token, widget.imagePath);
+
                   if (res.statusCode == 201) {
                     _showDialog(
                         "Votre demande est en cours de traitement", false);
                   } else {
-                    _showDialog("L'envoie de l'image à échoué", true);
+                    _showDialog(
+                        "Votre image n'est pas une note de frais", true);
                   }
                 }),
             floatingActionButtonLocation:
@@ -92,9 +88,6 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
         }).then((value) {
       int count = 0;
       int countLimit = widget.count == null ? 1 : widget.count;
-      if (error && countLimit >= 2) {
-        countLimit--;
-      }
       widget.notifyParent();
       Navigator.of(context).popUntil((_) => count++ >= countLimit);
     });
