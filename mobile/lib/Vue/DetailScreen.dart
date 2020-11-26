@@ -73,10 +73,6 @@ class _DetailScreenState extends State<DetailScreen> {
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onLongPress: () async {
-              final bytes = Io.File(
-                      '/Users/manon_rambaud/Pictures/Ticket/73535-photo0jpg.jpg')
-                  .readAsBytesSync();
-
               int id = reports.elementAt(index).id;
               Report report = await ReportClient.getPost(widget.token, id);
               _showDialog(
