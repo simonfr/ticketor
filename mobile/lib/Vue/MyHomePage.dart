@@ -43,6 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void dispose() {
     super.dispose();
+    _getReports();
   }
 
   _getReports() async {
@@ -156,6 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     builder: (context) => TakeExpenseScreen(
                       camera: firstCamera,
                       token: widget.token,
+                      notifyParent: _getReports(),
                     ),
                   ),
                 );
@@ -183,7 +185,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => DisplayPictureScreen(
-                        imagePath: path, token: widget.token),
+                        imagePath: path,
+                        token: widget.token,
+                        notifyParent: _getReports),
                   ),
                 );
               },

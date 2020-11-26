@@ -9,9 +9,10 @@ import 'DisplayPictureScreen.dart';
 // A screen that allows users to take a picture using a given camera.
 class TakeExpenseScreen extends StatefulWidget {
   final CameraDescription camera;
+  final Function() notifyParent;
 
   const TakeExpenseScreen(
-      {Key key, @required this.camera, @required this.token})
+      {Key key, @required this.camera, @required this.token, this.notifyParent})
       : super(key: key);
 
   final String token;
@@ -100,7 +101,10 @@ class TakeExpenseScreenState extends State<TakeExpenseScreen> {
               context,
               MaterialPageRoute(
                 builder: (context) => DisplayPictureScreen(
-                    imagePath: path, token: widget.token, count: 3),
+                    imagePath: path,
+                    token: widget.token,
+                    count: 3,
+                    notifyParent: widget.notifyParent),
               ),
             );
           } catch (e) {

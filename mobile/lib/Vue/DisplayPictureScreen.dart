@@ -4,6 +4,8 @@ import 'package:http/http.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/Services/ReportClient.dart';
+import 'package:mobile/Vue/MyHomePage.dart';
+import 'package:mobile/main.dart';
 import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart';
 
@@ -11,9 +13,14 @@ class DisplayPictureScreen extends StatefulWidget {
   final String imagePath;
   final String token;
   final int count;
+  final Function() notifyParent;
 
   const DisplayPictureScreen(
-      {Key key, @required this.imagePath, @required this.token, this.count})
+      {Key key,
+      @required this.imagePath,
+      @required this.token,
+      this.count,
+      this.notifyParent})
       : super(key: key);
 
   @override
@@ -71,11 +78,11 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
                 child: Text('Ok'),
                 onPressed: () {
                   int count = 0;
-                  debugPrint(widget.count.toString());
                   int countLimit = widget.count == null ? 2 : widget.count;
                   if (error && countLimit >= 3) {
                     countLimit--;
                   }
+                  widget.notifyParent();
                   Navigator.of(context).popUntil((_) => count++ >= countLimit);
                 },
               ),
