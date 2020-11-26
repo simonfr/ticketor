@@ -62,11 +62,13 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
                 onPressed: () async {
                   StreamedResponse res = await ReportClient.PostExpense(
                       widget.token, widget.imagePath);
+
                   if (res.statusCode == 201) {
                     _showDialog(
                         "Votre demande est en cours de traitement", false);
                   } else {
-                    _showDialog("L'envoie de l'image à échoué", true);
+                    final message = await res.stream.bytesToString();
+                    _showDialog(message, true);
                   }
                 }),
             floatingActionButtonLocation:
@@ -92,9 +94,6 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
         }).then((value) {
       int count = 0;
       int countLimit = widget.count == null ? 1 : widget.count;
-      if (error && countLimit >= 2) {
-        countLimit--;
-      }
       widget.notifyParent();
       Navigator.of(context).popUntil((_) => count++ >= countLimit);
     });

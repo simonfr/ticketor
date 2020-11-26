@@ -14,13 +14,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: '/login',
-      routes: {
-        // When navigating to the "/" route, build the FirstScreen widget.
-        '/login': (context) => Authentication(),
-        // When navigating to the "/second" route, build the SecondScreen widget.
-        '/': (context) => MyHomePage(),
-      },
       title: 'Ticketor',
       theme: ThemeData(
         // This is the theme of your application.
@@ -34,6 +27,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
+      home: Authentication(),
     );
   }
 }

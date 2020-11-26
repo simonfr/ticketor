@@ -38,7 +38,6 @@ class ReportClient {
     request.headers.addAll(headers);
     var res = await request.send();
     debugPrint(res.statusCode.toString());
-    debugPrint(token);
     return res;
   }
 }
