@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/Modeles/Report.dart';
 import 'package:mobile/Services/ReportClient.dart';
-
+import 'dart:io' as Io;
+import 'dart:convert';
 import '../Modeles/Report.dart';
+import '../Services/ReportClient.dart';
 
 class DetailScreen extends StatefulWidget {
   DetailScreen({Key key, this.token}) : super(key: key);
@@ -70,20 +72,27 @@ class _DetailScreenState extends State<DetailScreen> {
         itemCount: entries.length,
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
-            onLongPress: () {
-              Report report = reports.elementAt(index);
-              _showDialog("Nom: " +
-                  report.name +
-                  "\nDate: " +
-                  report.date +
-                  "\nQuantité: " +
-                  report.quantity.toString() +
-                  "\nMontant Unitaire: " +
-                  report.unitAmount.toString() +
-                  "\nMontant totale: " +
-                  report.totalAmount.toString() +
-                  "\nStatus: " +
-                  report.state);
+            onLongPress: () async {
+              final bytes = Io.File(
+                      '/Users/manon_rambaud/Pictures/Ticket/73535-photo0jpg.jpg')
+                  .readAsBytesSync();
+
+              int id = reports.elementAt(index).id;
+              Report report = await ReportClient.getPost(widget.token, id);
+              _showDialog(
+                  "Nom: " +
+                      report.name +
+                      "\nDate: " +
+                      report.date +
+                      "\nQuantité: " +
+                      report.quantity.toString() +
+                      "\nMontant Unitaire: " +
+                      report.unitAmount.toString() +
+                      "\nMontant totale: " +
+                      report.totalAmount.toString() +
+                      "\nStatus: " +
+                      report.state,
+                  report.image);
             },
             child: Container(
               height: 50,
@@ -108,12 +117,21 @@ class _DetailScreenState extends State<DetailScreen> {
     );
   }
 
-  void _showDialog(String message) {
+  void _showDialog(String message, String image) {
     showDialog(
       useRootNavigator: false,
       context: context,
       child: AlertDialog(
         title: Text(message),
+        content: Stack(
+          alignment: Alignment.center,
+          children: <Widget>[
+            Image.memory(
+              base64Decode(image),
+              fit: BoxFit.cover,
+            ),
+          ],
+        ),
         actions: [
           FlatButton(
             child: Text('OK'),

@@ -28,6 +28,20 @@ class ReportClient {
     }
   }
 
+  static Future<Report> getPost(String token, int id) async {
+    Response res = await get(
+      reportsUrl + "/" + id.toString(),
+      headers: {HttpHeaders.authorizationHeader: "Bearer $token"},
+    );
+    if (res.statusCode == 200) {
+      Report report = Report.fromJson(jsonDecode(res.body));
+
+      return report;
+    } else {
+      throw "Can't get reports";
+    }
+  }
+
   static Future<StreamedResponse> PostExpense(
       String token, String imagePath) async {
     Map<String, String> headers = {
